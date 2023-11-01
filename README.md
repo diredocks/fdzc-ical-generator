@@ -1,2 +1,2 @@
 # fdzc-ical-generator
-Fuzhou University Zhicheng College class table ical file generator
+Fuzhou University Zhicheng College Class Table ical File Generator    
