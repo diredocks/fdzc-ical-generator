@@ -155,6 +155,10 @@ if __name__ == "__main__":
             courses.append(Course(current_class["name"], current_class["teacher"], current_class["location"], None, 
                                   current_class["dayofweek"], Course.week(current_class["duration"][0], current_class["duration"][1]), 
                                   current_class["index"]))
+        elif len(current_class["duration"]) == 2 and current_class["duration"][0] == current_class["duration"][1]:
+            courses.append(Course(current_class["name"], current_class["teacher"], current_class["location"], None, 
+                                  current_class["dayofweek"], current_class["duration"][0], 
+                                  current_class["index"]))
         elif current_class["duration"][0] == "单":
             courses.append(Course(current_class["name"], current_class["teacher"], current_class["location"], None, 
                                   current_class["dayofweek"], Course.odd_week(current_class["duration"][1], current_class["duration"][2]), 
@@ -175,11 +179,12 @@ if __name__ == "__main__":
         (14, 55),
         (16, 00),
         (16, 55),
-        (19, 00)  # 晚自习
+        (19, 00),  # 晚自习
+        (19, 55)
     ],
     start=(2023, 8, 28), # 2023 年 8 月 28 日是开学第一周星期一
     courses=courses
     )
-
+    
     with open("课表.ics", "w") as w:
         w.write(school.generate())
