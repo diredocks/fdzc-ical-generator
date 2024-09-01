@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 from data import Course, School # Speacial thanks to junyilou/python-ical-timetable
 
-def login(username, password, year="2023", term="上"):
+def login(username, password, year="2024", term="上"):
     user = requests.session()
 
     login_id = user.get("https://jwc.fdzcxy.edu.cn/default.asp") # 获取 Cookie
@@ -84,7 +84,7 @@ def parse_class_timetable(raw_html):
 
                 for raws in current_class_raw: # 依次读源数据
                     if "[" in raws:
-                        raws = re.findall('\[(.*?)\]', raws) # 单双周和地点
+                        raws = re.findall(r'\[(.*?)\]', raws) # 单双周和地点
                         if current_class_1st["location"] == None: # 因为不知道单双周哪个在先所以判断一下
                             current_class_1st["duration"][0] = raws[0]
                             current_class_1st["location"] = raws[1]
@@ -93,12 +93,12 @@ def parse_class_timetable(raw_html):
                             current_class_2nd["location"] = raws[1]
                     elif "周" in raws: # 填课程周数
                         if current_class_1st["duration"][3]:
-                            current_class_1st["duration"][1] = int(re.findall('\((.*?)\-', raws)[0])
-                            current_class_1st["duration"][2] = int(re.findall('\-(.*?)周', raws)[0])
+                            current_class_1st["duration"][1] = int(re.findall(r'\((.*?)\-', raws)[0])
+                            current_class_1st["duration"][2] = int(re.findall(r'\-(.*?)周', raws)[0])
                             current_class_1st["duration"][3] = False # 确认这里改过了
                         else:
-                            current_class_2nd["duration"][1] = int(re.findall('\((.*?)\-', raws)[0])
-                            current_class_2nd["duration"][2] = int(re.findall('\-(.*?)周', raws)[0])
+                            current_class_2nd["duration"][1] = int(re.findall(r'\((.*?)\-', raws)[0])
+                            current_class_2nd["duration"][2] = int(re.findall(r'\-(.*?)周', raws)[0])
                             current_class_2nd["duration"][3] = False
                     elif "班" in raws:
                         for current_class_info in class_info: # 又是遍历嗯搜....
@@ -130,10 +130,12 @@ def parse_class_timetable(raw_html):
 
                 for raws in current_class_raw: # 依次读源数据
                     if "[" in raws: # 填课程位置
-                        raws = re.findall('\[(.*?)\]', raws)
-                        current_class["location"] = raws[0]
+                        raws = re.findall(r'\[(.*?)\]', raws)
+                        for raw in raws:
+                            if raw != "单" or raw != "双":
+                                current_class["location"] = raw
                     elif "周" in raws: # 填课程周数
-                        current_class["duration"] = [int(re.findall('\((.*?)\-', raws)[0]), int(re.findall('\-(.*?)周', raws)[0])]
+                        current_class["duration"] = [int(re.findall(r'\((.*?)\-', raws)[0]), int(re.findall(r'\-(.*?)周', raws)[0])]
                     elif "班" in raws: # 填课程名称等等，因为课程名可以对应左侧课程情况表，所有顺便填一下老师和周数
                         for current_class_info in class_info: # 又是遍历嗯搜....
                             if current_class_info["name"] in raws:
@@ -168,6 +170,7 @@ if __name__ == "__main__":
                                   current_class["dayofweek"], Course.even_week(current_class["duration"][1], current_class["duration"][2]), 
                                   current_class["index"]))
     
+
     school = School(
     duration=45, # 每节课时间为 45 分钟
     timetable=[
@@ -180,9 +183,10 @@ if __name__ == "__main__":
         (16, 00),
         (16, 55),
         (19, 00),  # 晚自习
-        (19, 55)
+        (19, 55),
+        (20, 50)
     ],
-    start=(2023, 8, 28), # 2023 年 8 月 28 日是开学第一周星期一
+    start=(2024, 8, 26), # 2023 年 8 月 28 日是开学第一周星期一
     courses=courses
     )
     
