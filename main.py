@@ -188,12 +188,12 @@ def parse_raw_page(raw_page):
             "even": any(filter(
                 lambda e:
                     isinstance(e, str) and
-                    e.startswith("单"),
+                    e.startswith("双"),
                 each)),
             "odd": any(filter(
                 lambda e: 
                     isinstance(e, str) and
-                    e.startswith("双"),
+                    e.startswith("单"),
                 each)),
         }
         for eaches in page_right_table
