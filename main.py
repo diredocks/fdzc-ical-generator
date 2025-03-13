@@ -9,10 +9,10 @@ def get_raw_classtable_page():
     username = ""
     password = ""
     school_year = "2024"
-    semester = "上"
+    semester = "下"
     base_url = "https://jwc.fdzcxy.edu.cn/"
     
-    with httpx.Client(default_encoding="utf-8") as client:
+    with httpx.Client(default_encoding="utf-8", timeout=10.0) as client:
         index_page = client.get(base_url+"default.asp").text
 
         login_url = BeautifulSoup(index_page, 'lxml')
@@ -88,7 +88,7 @@ def parse_raw_page(raw_page):
     # 提取页面左侧表格课程内容
     page_left_table = page_bs.select_one("body > table:nth-child(3)").select_one("td").select("tr:not([height])")
     page_left_table = [
-        each.findChildren("td")
+        each.find_all("td")
         for each in page_left_table
     ]
 
@@ -241,7 +241,7 @@ def parse_raw_page(raw_page):
         if course["even"]
         else dict(
             course,
-            weeks=course["weeks"][0]
+            weeks=[course["weeks"][0]]
         )
         if course["weeks"][0] == course["weeks"][1]
         else dict(
@@ -252,7 +252,6 @@ def parse_raw_page(raw_page):
         for course in courses
     ]
 
-    print(courses)
     # 最后生成课表
     courses = [
         icaltimetable.Course(
@@ -271,16 +270,14 @@ def parse_raw_page(raw_page):
     return courses
 
 if __name__ == "__main__":
-    '''
     raw_classtable_page = get_raw_classtable_page()
-    print(raw_classtable_page)
-    with open('classtable3.html', 'w') as file:
-        file.write(raw_classtable_page)
-    '''
+    #print(raw_classtable_page)
+    #with open('classtable6.html', 'w') as file:
+    #    file.write(raw_classtable_page)
 
-    with open("classtable.html", "r") as file:
-        raw_page = file.read()
-    courses = parse_raw_page(raw_page)
+    #with open("haha.html", "r") as file:
+    #    raw_classtable_page = file.read()
+    courses = parse_raw_page(raw_classtable_page)
 
     school = icaltimetable.School(
         duration=45, # 每节课时间为 45 分钟
@@ -297,7 +294,7 @@ if __name__ == "__main__":
             (19, 55),
             (20, 50),
         ],
-        start=(2024, 8, 26), # 2024 年 8 月 26 日是开学第一周星期一
+        start=(2025, 2, 24), # 2025 年 2 月 24 日是开学第一周星期一
         courses=courses
     )
 
