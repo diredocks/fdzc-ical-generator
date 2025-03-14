@@ -1,5 +1,6 @@
 # fdzc-ical-generator
 Fuzhou University Zhicheng College ICS Schedule Generator 福州大学至诚学院 ics 课表生成
+![Screenshot](https://github.com/user-attachments/assets/04b5f183-47a7-4baa-a81a-55bd36bfbb30)
 
 ## Usage
 
