@@ -70,12 +70,17 @@ class School:
         "CALSCALE:GREGORIAN",
         "BEGIN:VTIMEZONE",
         "TZID:Asia/Shanghai",
-        "END:VTIMEZONE"]
+        "END:VTIMEZONE",
+    ]
     FOOTERS = ["END:VCALENDAR"]
 
     def __post_init__(self) -> None:
-        assert self.timetable, "请设置每节课的上课时间，以 24 小时制两元素元组方式输入小时、分钟"
-        assert len(self.start) >= 3, "请设置为开学第一周的日期，以元素元组方式输入年、月、日"
+        assert self.timetable, (
+            "请设置每节课的上课时间，以 24 小时制两元素元组方式输入小时、分钟"
+        )
+        assert len(self.start) >= 3, (
+            "请设置为开学第一周的日期，以元素元组方式输入年、月、日"
+        )
         assert self.courses, "请设置你的课表数组，每节课是一个 Course 实例"
         self.timetable.insert(0, (0, 0))
         self.start_dt = datetime(*self.start[:3])
@@ -111,7 +116,7 @@ class School:
                 f"DTEND;TZID=Asia/Shanghai:{self.time(week, course.weekday, course.indexes[-1], True):%Y%m%dT%H%M%S}",
                 f"DTSTAMP:{runtime:%Y%m%dT%H%M%SZ}",
                 f"UID:{md5(str((course.title, week, course.weekday, course.indexes[0])).encode()).hexdigest()}",
-                f"URL;VALUE=URI:",
+                "URL;VALUE=URI:",
                 *course.location,
                 "END:VEVENT",
             ]
@@ -134,6 +139,7 @@ class Geo:
     仅提供坐标和地点名称的地点信息：
     name: 地点名称，lat：纬度，lon：经度
     """
+
     name: str
     lat: float | str
     lon: float | str
@@ -156,7 +162,7 @@ class AppleMaps:
 
     def __init__(self, calendar: str) -> None:
         self.locations: dict[str, dict[str, str]] = {}
-        with open(calendar, encoding = "utf-8") as r:
+        with open(calendar, encoding="utf-8") as r:
             c = r.read()
         for i in re.findall(r"(?<=BEGIN:VEVENT)[\s\S]*?(?=END:VEVENT)", c):
             self.generate(i)
@@ -171,13 +177,11 @@ class AppleMaps:
                 d -= 1
             lines[d] += e.removeprefix(" ")
             lines[i] = ""
-        data = {k: next((i for i in lines if i.startswith(k)), "")
-                for k in self.KEYS}
+        data = {k: next((i for i in lines if i.startswith(k)), "") for k in self.KEYS}
         if not all(data.values()):
             return
         title = data.pop("SUMMARY").removeprefix("SUMMARY:").strip()
-        geo = re.findall(r"geo:([\d.]+),([\d.]+)",
-                         data["X-APPLE-STRUCTURED-LOCATION"])
+        geo = re.findall(r"geo:([\d.]+),([\d.]+)", data["X-APPLE-STRUCTURED-LOCATION"])
         if geo:
             data["GEO"] = Geo(title, geo[0][0], geo[0][1]).geo
         self.locations[title] = data
