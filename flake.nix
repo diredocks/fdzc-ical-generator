@@ -16,14 +16,14 @@
   in {
     devShells = forEachSupportedSystem ({pkgs}: {
       default = pkgs.mkShell {
-        venvDir = ".venv";
+        # venvDir = ".venv";
         packages = with pkgs;
           [python312]
           ++ (with pkgs.python312Packages; [
-            pip
+            uv
             numpy
             ruff
-            venvShellHook
+            # venvShellHook
           ]);
       };
     });

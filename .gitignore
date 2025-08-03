@@ -2,4 +2,5 @@ captcha.bmp
 __pycache__
 *.ics
 *.html
-.venv/
+.venv
+.python-version
